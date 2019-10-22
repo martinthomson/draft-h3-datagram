@@ -13,15 +13,13 @@ Expires: April 23, 2020
 
 Abstract
 
-   The QUIC DATAGRAM extension [I-D.pauly-quic-datagram] provides
-   application protocols running over QUIC [I-D.ietf-quic-transport]
-   with a way to send unreliable data while leveraging the security and
-   congestion-control properties of QUIC.  However, QUIC DATAGRAM frames
-   do not provide a means to demultiplex application contexts using
-   them.  This document defines how to use QUIC DATAGRAM frames when the
-   application protocol running over QUIC is HTTP/3
-   [I-D.ietf-quic-http], by adding an identifier at the start of the
-   frame payload.
+   The QUIC DATAGRAM extension provides application protocols running
+   over QUIC with a mechanism to send unreliable data while leveraging
+   the security and congestion-control properties of QUIC.  However,
+   QUIC DATAGRAM frames do not provide a means to demultiplex
+   application contexts.  This document defines how to use QUIC DATAGRAM
+   frames when the application protocol running over QUIC is HTTP/3 by
+   adding an identifier at the start of the frame payload.
 
 Status of This Memo
 
@@ -50,6 +48,8 @@ Copyright Notice
    (https://trustee.ietf.org/license-info) in effect on the date of
    publication of this document.  Please review these documents
    carefully, as they describe your rights and restrictions with respect
+   to this document.  Code Components extracted from this document must
+   include Simplified BSD License text as described in Section 4.e of
 
 
 
@@ -58,8 +58,6 @@ Schinazi                 Expires April 23, 2020                 [Page 1]
 Internet-Draft              HTTP/3 Datagrams                October 2019
 
 
-   to this document.  Code Components extracted from this document must
-   include Simplified BSD License text as described in Section 4.e of
    the Trust Legal Provisions and are provided without warranty as
    described in the Simplified BSD License.
 
@@ -80,12 +78,12 @@ Table of Contents
 
    The QUIC DATAGRAM extension [I-D.pauly-quic-datagram] provides
    application protocols running over QUIC [I-D.ietf-quic-transport]
-   with a way to send unreliable data while leveraging the security and
-   congestion-control properties of QUIC.  However, QUIC DATAGRAM frames
-   do not provide a means to demultiplex application contexts using
-   them.  This document defines how to use QUIC DATAGRAM frames when the
-   application protocol running over QUIC is HTTP/3
-   [I-D.ietf-quic-http], by adding an identifier at the start of the
+   with a mechanism to send unreliable data while leveraging the
+   security and congestion-control properties of QUIC.  However, QUIC
+   DATAGRAM frames do not provide a means to demultiplex application
+   contexts.  This document defines how to use QUIC DATAGRAM frames when
+   the application protocol running over QUIC is HTTP/3
+   [I-D.ietf-quic-http] by adding an identifier at the start of the
    frame payload.
 
    This design mimics the use of Stream Types in HTTP/3, which provide a
@@ -103,6 +101,8 @@ Table of Contents
 
    When used with HTTP/3, the Datagram Data field of QUIC DATAGRAM
    frames uses the following format:
+
+
 
 
 
@@ -134,15 +134,15 @@ Internet-Draft              HTTP/3 Datagrams                October 2019
 
    Flow identifiers represent bidirectional flows of datagrams within a
    single QUIC connection.  These are effectively equivalent to UDP
-   ports, that allow basic demultiplexing of application data.  The
-   primary role of slow identifiers is to provide a standard mechanism
+   ports and allow basic demultiplexing of application data.  The
+   primary role of flow identifiers is to provide a standard mechanism
    for demultiplexing application data flows, which may be destined for
    different processing threads in the application, akin to UDP sockets.
 
    Beyond this, a sender SHOULD ensure that DATAGRAM frames within a
    single flow are transmitted in order relative to one another.  If
    multiple DATAGRAM frames can be packed into a single QUIC packet, the
-   sender SHOULD group them by Flow Identifier to promote fate-sharing
+   sender SHOULD group them by flow identifier to promote fate-sharing
    within a specific flow and improve the ability to process batches of
    datagram messages efficiently on the receiver.
 
@@ -150,17 +150,17 @@ Internet-Draft              HTTP/3 Datagrams                October 2019
 
    Implementations of HTTP/3 that support the DATAGRAM extension will
    provide a flow identifier allocation service.  That service will
-   allow applications co-located with HTTP/3 to request a unique Flow
-   Identifier that they can subsequently use for their own purposes.
-   The HTTP/3 implementation will then parse the Flow Identifier of
+   allow applications co-located with HTTP/3 to request a unique flow
+   identifier that they can subsequently use for their own purposes.
+   The HTTP/3 implementation will then parse the flow identifier of
    incoming DATAGRAM frames and use it to deliver the frame to the
    appropriate application.
 
 4.  Security Considerations
 
    This document currently does not have additional security
-   considerations on top of the ones defined in
-   [I-D.ietf-quic-transport] and [I-D.pauly-quic-datagram].
+   considerations beyond those defined in [I-D.ietf-quic-transport] and
+   [I-D.pauly-quic-datagram].
 
 
 
